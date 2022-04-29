@@ -143,7 +143,8 @@ NOTES:
  *   Rating: 1
  */
 int bitXor(int x, int y) {
-  return ~(~x&~y)&~(x&y);
+  return ~(~x&~y)&~(x&y); //异或就是当参与运算的两个二进制数不同时结果才为1，其他情况为0。
+  // 所以结果可以使用“非”和“与”计算不是同时为0情况和不是同时为1的情况进行位与
 }
 /* 
  * tmin - return minimum two's complement integer 
@@ -165,7 +166,8 @@ int tmin(void) {
  *   Rating: 1
  */
 int isTmax(int x) {
-  return (x + 1);
+  return !((~x)^(x + 1)); // 需要分清逻辑运算符和位运算符
+  // 在这里只需要判断出Tmax的条件就可以
 }
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
@@ -176,7 +178,8 @@ int isTmax(int x) {
  *   Rating: 2
  */
 int allOddBits(int x) {
-  return 2;
+  int temp = 0XAAAA; // 注意此处的奇数位是指2的幂次，因此对于int数，所有奇数位都是1就是0XAAAA。
+  return !(temp^(temp&x)) //将除奇数位都清零，然后与mask temp来异或，如果所有奇数位都是1，异或结果就是0.
 }
 /* 
  * negate - return -x 
@@ -186,7 +189,7 @@ int allOddBits(int x) {
  *   Rating: 2
  */
 int negate(int x) {
-  return 2;
+  return ~(x-1); //相对比较简单
 }
 //3
 /* 
@@ -199,7 +202,9 @@ int negate(int x) {
  *   Rating: 3
  */
 int isAsciiDigit(int x) {
-  return 2;
+  int a = 0x30; //初始化两个边界
+  int b = 0x39; // 判断输入x是不是ascii码 "0"到"9"之间。
+  return (!((x + ~a +1)>>31) & (!!((x + ~b + 1)>>31))) //通过将x输入 加上 上下边界 有没有溢出来判断是不是在范围内
 }
 /* 
  * conditional - same as x ? y : z 
@@ -208,8 +213,9 @@ int isAsciiDigit(int x) {
  *   Max ops: 16
  *   Rating: 3
  */
+ // 三目运算符
 int conditional(int x, int y, int z) {
-  return 2;
+  return (~(!(x))&y)|(~x&z);  // if x == true, return y; if x == false, return z.
 }
 /* 
  * isLessOrEqual - if x <= y  then return 1, else return 0 
@@ -219,7 +225,7 @@ int conditional(int x, int y, int z) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-  return 2;
+  return (x + ~y + 1)>>31; 
 }
 //4
 /* 
