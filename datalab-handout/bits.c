@@ -179,7 +179,7 @@ int isTmax(int x) {
  */
 int allOddBits(int x) {
   int temp = 0XAAAA; // 注意此处的奇数位是指2的幂次，因此对于int数，所有奇数位都是1就是0XAAAA。
-  return !(temp^(temp&x)) //将除奇数位都清零，然后与mask temp来异或，如果所有奇数位都是1，异或结果就是0.
+  return !(temp^(temp&x)); //将除奇数位都清零，然后与mask temp来异或，如果所有奇数位都是1，异或结果就是0.
 }
 /* 
  * negate - return -x 
@@ -204,7 +204,7 @@ int negate(int x) {
 int isAsciiDigit(int x) {
   int a = 0x30; //初始化两个边界
   int b = 0x39; // 判断输入x是不是ascii码 "0"到"9"之间。
-  return (!((x + ~a +1)>>31) & (!!((x + ~b + 1)>>31))) //通过将x输入 加上 上下边界 有没有溢出来判断是不是在范围内
+  return (!((x + ~a +1)>>31) & (!!((x + ~b + 1)>>31)));//通过将x输入 加上 上下边界 有没有溢出来判断是不是在范围内
 }
 /* 
  * conditional - same as x ? y : z 
@@ -237,7 +237,7 @@ int isLessOrEqual(int x, int y) {
  *   Rating: 4 
  */
 int logicalNeg(int x) {
-  return 2;
+  return ((x|(~x + 1))>>31)+1;  //(x|(~x + 1)) 这部分保证非0数的最高位符号位一定是1，这样右移31位就可以得到非零数的符号位，可以和0区分开。
 }
 /* howManyBits - return the minimum number of bits required to represent x in
  *             two's complement
@@ -252,7 +252,9 @@ int logicalNeg(int x) {
  *  Rating: 4
  */
 int howManyBits(int x) {
-  return 0;
+  int sign = x >> 31;// 首先判断x的正负
+  x = (x & ~sign) | (~x &sign); // 正数保持不变，负数变为相反数。 接下来都只需要判断正数的二进制表示位数，再加上 符号位即可。
+  return 0;  
 }
 //float
 /* 
@@ -300,3 +302,4 @@ int floatFloat2Int(unsigned uf) {
 unsigned floatPower2(int x) {
     return 2;
 }
+
